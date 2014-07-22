@@ -53,3 +53,11 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# CMake
+CMakeFiles
+CMakeCache.*
+*.cmake
+Makefile
+
+# Autobackups
+*~
