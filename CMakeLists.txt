@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project( pykayde )
 
+set(CMAKE_CXX_FLAGS "-fPIC -O3")
+
 # put our local cmake find scripts at the beginning of the cmake
 # module search path
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Boost.Numpy/libs/numpy/cmake ${CMAKE_MODULE_PATH})
@@ -9,10 +11,12 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Boost.Numpy/libs/numpy/cmake ${CMAKE
 # configure output folders so artifacts are built into a single set of
 # top-level folders rather than the default cmake build structure that
 # matches the source tree.
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib 
+
+# TEMPORARY: libs in main directory for easy testing
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     CACHE PATH "Output directory for static libraries.")
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     CACHE PATH "Output directory for shared libraries.")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
@@ -20,9 +24,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 
 # find required python packages
 find_package(PythonInterp REQUIRED)
-find_package(PythonLibsNew REQUIRED)
+find_package(PythonLibs REQUIRED)
 #find_package(NumPy REQUIRED)
-set(NUMPY_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/Boost.Numpy/boost)
+set(NUMPY_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/Boost.Numpy)
+set(ALGLIB_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/libalg)
 
 # find boost
 # 
@@ -64,7 +69,8 @@ include_directories(
   ${PROJECT_SOURCE_DIR}
   ${PYTHON_INCLUDE_DIRS}
   ${NUMPY_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS} 
+  ${Boost_INCLUDE_DIRS}
+  ${ALGLIB_INCLUDE_DIRS}
   )
 
 # install headers
@@ -77,6 +83,5 @@ install(DIRECTORY boost
 
 # add submodules
 ADD_SUBDIRECTORY(Boost.Numpy/libs/numpy/src)
-ADD_SUBDIRECTORY(pass_list)
-#ADD_SUBDIRECTORY(pass_numpy)
+ADD_SUBDIRECTORY(src)
 

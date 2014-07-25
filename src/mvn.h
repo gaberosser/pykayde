@@ -11,48 +11,37 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <assert.h>
 #include "boost/python.hpp"
-#include "boost/python/stl_iterator.hpp"
 
 using namespace std;
 using namespace boost::python;
 const double PI = 3.141592653589793238463;
 
-template<typename T> vector<T> list_to_vector(list list)
-{
-	int n = extract<int>(list.attr("__len__")());
-	vector<T> vec(n);
-	std::copy(stl_input_iterator<T>(list), stl_input_iterator<T>(), vec.begin());
-	return vec;
-}
-
 class Mvn {
 	int ndim;
+	double norm;
 	vector<double> means;
 	vector<double> stdevs;
 public:
 	Mvn(vector<double> means, vector<double> stdevs) {
 		this->ndim = means.size();
+		assert (stdevs.size() == this->ndim);
 		this->means = means;
 		this->stdevs = stdevs;
+		this->norm = pow(2 * PI, -ndim * 0.5);
 	}
 
-	Mvn(list means, list stdevs) {
-		this->ndim = extract<int>(means.attr("__len__")());
-		this->means = list_to_vector<double>(means);
-		this->stdevs = list_to_vector<double>(stdevs);
-
-		}
-
-	double pdf(vector<double> x) {
+	double pdf(vector<double> *x) {
+		assert (x->size() == this->ndim);
 		double a = 1.0;
 		double b = 0.0;
 		for (int i=0; i<ndim; ++i) {
 			a *= stdevs[i];
-			b -= (x[i] - means[i]) * (x[i] - means[i]) / (2 * stdevs[i] * stdevs[i]);
+//			b -= (x->at(i) - means[i]) * (x->at(i) - means[i]) / (2 * stdevs[i] * stdevs[i]);
+            b -= pow(x->at(i) - means[i], 2) / (2 * pow(stdevs[i], 2));
 		}
-		double res = pow(2 * PI, -ndim * 0.5) / a * exp(b);
-		return res;
+		return this->norm / a * exp(b);
 	}
 };
 
